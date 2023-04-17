@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_transform_map">
+    <sys_transform_map action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <copy_empty_fields>false</copy_empty_fields>
+        <create_new_record_on_empty_coalesce_fields>false</create_new_record_on_empty_coalesce_fields>
+        <enforce_mandatory_fields>All Fields</enforce_mandatory_fields>
+        <name>Import Historic NeedIt Data</name>
+        <order>100</order>
+        <run_business_rules>true</run_business_rules>
+        <run_script>true</run_script>
+        <script><![CDATA[(function transformRow(source, target, map, log, isUpdate) {
+
+	try {
+		log.info("TM NeedIt script is runnning.");
+		if (!("u_requested_for_email" in source)) {
+			log.info("Fetching mail from DB");
+			var splitName = source.u_requested_for.split(' ');
+			var firstName = splitName[0];
+			var lastName = splitName[1];
+			
+			var gr = new GlideRecord('sys_user');
+			gr.addQuery('first_name', firstName);
+			gr.addQuery('last_name', lastName);
+			gr.query();
+			if(gr.next()) // Warning, this does not handle homonymes
+				target.u_requested_for_email = gr.getValue('email');
+			else 
+				target.u_requested_for_email = firstName + "." + lastName + "@test.fr";	
+		}
+	} catch(e) {
+		log.info('Error in TM NeedIt => ' + e);
+	}
+
+})(source, target, map, log, action==="update");]]></script>
+        <source_table>x_58872_needit_historic_needit_data</source_table>
+        <sys_class_name>sys_transform_map</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2023-04-12 14:03:09</sys_created_on>
+        <sys_id>9f493ed72fc661106fc8e36ef699b669</sys_id>
+        <sys_mod_count>25</sys_mod_count>
+        <sys_name>Import Historic NeedIt Data</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_transform_map_9f493ed72fc661106fc8e36ef699b669</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2023-04-16 07:07:09</sys_updated_on>
+        <target_table>x_58872_needit_needit</target_table>
+    </sys_transform_map>
+</record_update>
